@@ -1,0 +1,36 @@
+services:
+  consumer:
+    image: node:20-alpine
+    container_name: create-user-consumer-sqs
+    user: "1000:1000"
+    working_dir: /app/create-user-consumer-sqs
+    command: npm run start:dev
+    volumes:
+      - ./create-user-consumer-sqs:/app/create-user-consumer-sqs
+    environment:
+      - SQS_REGION=${SQS_REGION}
+      - SQS_ACCESS_KEY=${SQS_ACCESS_KEY}
+      - SQS_SECRET=${SQS_SECRET}
+    networks:
+      - microservices_network
+
+  publisher:
+    image: node:20-alpine
+    container_name: create-user-sqs
+    user: "1000:1000"
+    ports:
+      - "3000:3000"
+    working_dir: /app/create-user-sqs
+    volumes:
+      - ./create-user-sqs:/app/create-user-sqs
+    command: npm run start:dev
+    environment:
+      - SQS_REGION=${SQS_REGION}
+      - SQS_ACCESS_KEY=${SQS_ACCESS_KEY}
+      - SQS_SECRET=${SQS_SECRET}
+    networks:
+      - microservices_network
+
+networks:
+  microservices_network:
+    driver: bridge
